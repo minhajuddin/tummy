@@ -1,0 +1,99 @@
+#!/usr/bin/env ruby
+
+class Runner
+  attr_reader :tmux
+  def initialize(tmux)
+    @tmux = tmux
+  end
+
+  def run
+    # if this session is already open let us attach it to that
+    attach_to_running_session
+    create_session
+    create_windows
+    focus_first_window
+    attach_to_running_session
+  end
+
+  def session; tmux.session_name end
+  def directory; tmux.directory_name end
+
+  def focus_first_window
+    run_cmd "tmux select-window -t #{session}:0"
+  end
+
+  def create_session
+    run_cmd "tmux new-session -d -s #{session} -c #{directory} -n #{tmux.windows.first.name}"
+  end
+
+  def create_windows
+    # the first window is already created
+    create_panes(tmux.windows.first)
+    tmux.windows.drop(1).each{|window| create_window(window)}
+  end
+
+  def create_window(window)
+    run_cmd "tmux new-window -n #{window.name} -t #{session} -c #{directory}"
+    create_panes(window)
+  end
+
+  def create_panes(window)
+    # the first pane is already created
+    panes = window.panes
+    run_cmd "tmux send-keys -t #{session} \"#{panes.first.cmd}\" C-m"
+    panes.drop(1).each do |pane|
+      run_cmd "tmux split-window #{"-h" if pane.alignment == :vertical} -t #{session}:#{window.index} -c #{directory}"
+      run_cmd "tmux send-keys -t #{session}:#{window.index}.#{pane.index} \"#{pane.cmd}\" C-m"
+    end
+  end
+
+  def attach_to_running_session
+    if run_cmd("tmux has-session -t #{session}")
+      exec "tmux attach-session -t #{session}"
+    end
+  end
+
+  def run_cmd(cmd)
+    puts "> #{cmd}"
+    system(cmd)
+  end
+end
+
+class Tmux
+
+  attr_reader :windows
+
+  def initialize(filepath)
+    @filepath = filepath
+    @windows = []
+  end
+
+  def run
+    config = File.read(@filepath)
+    self.instance_eval config
+    Runner.new(self).run
+  end
+
+  def session(name)
+    @session = name
+  end
+
+  def session_name; @session end
+  def directory_name; @directory end
+
+  def directory(directory)
+    @directory = directory
+  end
+
+  Window = Struct.new(:name, :panes, :index)
+  def window(name, panes)
+    @windows << Window.new(name, panes.each_with_index.map{|x, i| x.index = i; x}, @windows.length)
+  end
+
+  Pane = Struct.new(:cmd, :alignment, :index)
+  def pane(cmd, alignment = :vertical)
+    Pane.new(cmd, alignment, 0)
+  end
+end
+
+Tmux.new("Tmuxfile" || ARGV.first).run
