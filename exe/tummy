@@ -96,4 +96,18 @@ class Tmux
   end
 end
 
+cmd = ARGV.first
+if cmd.to_s.strip.downcase == "init"
+  require 'fileutils'
+  FileUtils.cp Path.join(__FILE__, "../Tmuxfile").to_s, "."
+  puts "created a Tmuxfile in the current directory"
+  exit(0)
+end
+
+file = "Tmuxfile" || ARGV.first
+if !file || !File.exists?(file)
+  puts "#{file} not found in current directory"
+  puts "you can initialize a new file by running `tummy init`"
+  exit(-1)
+end
 Tmux.new("Tmuxfile" || ARGV.first).run

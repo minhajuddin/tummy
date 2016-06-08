@@ -1,0 +1,20 @@
+session "z2-web"
+directory "/home/minhajuddin/z2/web"
+
+window "src", [
+  pane("vim TODO"),
+]
+
+window "server-iex", [
+  pane("iex -S mix phoenix.server"),
+  pane("iex -S mix", :horizontal),
+  pane("git status", :vertical),
+]
+
+window "play", [
+  pane("echo hey"),
+  pane("date", :horizontal),
+  pane("echo awesome", :vertical),
+]
+
+# vim: filetype=ruby
