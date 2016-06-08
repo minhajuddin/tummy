@@ -96,18 +96,25 @@ class Tmux
   end
 end
 
+# init a Tmuxfile
 cmd = ARGV.first
 if cmd.to_s.strip.downcase == "init"
+  if File.exists?("Tmuxfile")
+    puts "ERROR: Tmuxfile is already present in the current directory"
+    exit(-1)
+  end
+
   require 'fileutils'
-  FileUtils.cp Path.join(__FILE__, "../Tmuxfile").to_s, "."
+  FileUtils.cp File.expand_path(File.join(__FILE__, "../../Tmuxfile")), "."
   puts "created a Tmuxfile in the current directory"
   exit(0)
 end
 
+# open a session
 file = "Tmuxfile" || ARGV.first
 if !file || !File.exists?(file)
   puts "#{file} not found in current directory"
   puts "you can initialize a new file by running `tummy init`"
   exit(-1)
 end
-Tmux.new("Tmuxfile" || ARGV.first).run
+Tmux.new(file).run
