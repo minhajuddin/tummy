@@ -105,7 +105,12 @@ if cmd.to_s.strip.downcase == "init"
   end
 
   require 'fileutils'
-  FileUtils.cp File.expand_path(File.join(__FILE__, "../../Tmuxfile")), "."
+  require 'erb'
+  raw_template = File.read File.expand_path(File.join(__FILE__, "../../Tmuxfile.erb"))
+  erb_template = ERB.new(raw_template)
+  cwd = FileUtils.pwd
+  current_directory_name = File.basename(cwd)
+  File.write("./Tmuxfile", erb_template.result(binding))
   puts "created a Tmuxfile in the current directory"
   exit(0)
 end
