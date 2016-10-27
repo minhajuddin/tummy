@@ -40,9 +40,9 @@ class Runner
   def create_panes(window)
     # the first pane is already created
     panes = window.panes
-    run_cmd "tmux send-keys -t #{session} \"#{panes.first.cmd}\" C-m"
+    run_cmd %Q[tmux send-keys -t #{session} "#{panes.first.cmd}" C-m]
     panes.drop(1).each do |pane|
-      run_cmd "tmux split-window #{"-h" if pane.alignment == :vertical} -t #{session}:#{window.index} -c #{directory}"
+      run_cmd "tmux split-window #{"-h" if pane.alignment == :vertical} -t #{session}:#{window.index} -c #{directory} #{pane.raw_args}"
       run_cmd "tmux send-keys -t #{session}:#{window.index}.#{pane.index} \"#{pane.cmd}\" C-m"
     end
   end
@@ -90,9 +90,9 @@ class Tmux
     @windows << Window.new(name, panes.each_with_index.map{|x, i| x.index = i; x}, @windows.length)
   end
 
-  Pane = Struct.new(:cmd, :alignment, :index)
-  def pane(cmd, alignment = :vertical)
-    Pane.new(cmd, alignment, 0)
+  Pane = Struct.new(:cmd, :alignment, :index, :raw_args)
+  def pane(cmd, alignment = :vertical, raw_args = "")
+    Pane.new(cmd, alignment, 0, raw_args)
   end
 end
 
