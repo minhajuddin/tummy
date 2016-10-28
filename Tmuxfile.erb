@@ -7,7 +7,7 @@ window "src", [
 
 window "server-iex", [
   pane("iex -S mix phoenix.server"),
-  # the last argument is raw args
+  # the last argument is passed to tmux as raw arguments
   pane("iex -S mix", :horizontal, "-l 8"),
   pane("git status", :vertical),
 ]

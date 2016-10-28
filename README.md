@@ -1,3 +1,4 @@
+[![Gem Version](https://badge.fury.io/rb/tummy.svg)](https://rubygems.org/gems/tummy)
 # Tummy
 
 Use a Tmuxfile with your tmux configuration to easily manage sessions
@@ -22,7 +23,8 @@ window "src", [
 
 window "server-iex", [
   pane("iex -S mix phoenix.server"),
-  pane("iex -S mix", :horizontal),
+  # the last argument is passed to tmux as raw arguments
+  pane("iex -S mix", :horizontal, "-l 20"),
   pane("git status", :vertical),
 ]
 
