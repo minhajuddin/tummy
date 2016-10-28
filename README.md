@@ -3,6 +3,8 @@
 
 Use a Tmuxfile with your tmux configuration to easily manage sessions
 
+![Demo](https://i.imgur.com/pBSixTt.gif)
+
 ## Installation
 
     $ gem install tummy
