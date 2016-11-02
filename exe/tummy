@@ -132,7 +132,7 @@ if cmd.to_s.strip.downcase == "init"
 end
 
 # open a session
-file = "Tmuxfile" || ARGV.first
+file = ARGV.first || "Tmuxfile"
 if !file || !File.exists?(file)
   puts "#{file} not found in current directory"
   puts "you can initialize a new file by running `tummy init`"
