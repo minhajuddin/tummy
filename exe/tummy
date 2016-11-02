@@ -98,6 +98,22 @@ end
 
 # init a Tmuxfile
 cmd = ARGV.first
+if cmd.to_s.strip.downcase == "help"
+  puts <<-EOS
+  Usage:
+
+  # initialize a Tmuxfile
+  $ tummy init
+
+  # run a tummy session
+  $ tummy TmuxFilePath
+
+  # run a tmux session for the default `Tmuxfile`
+  $ tummy
+  EOS
+  exit(0)
+end
+
 if cmd.to_s.strip.downcase == "init"
   if File.exists?("Tmuxfile")
     puts "ERROR: Tmuxfile is already present in the current directory"
