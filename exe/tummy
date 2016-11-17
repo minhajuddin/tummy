@@ -11,15 +11,15 @@ class Runner
     attach_to_running_session
     create_session
     create_windows
-    focus_first_window
+    focus_window
     attach_to_running_session
   end
 
   def session; tmux.session_name end
   def directory; tmux.directory_name end
 
-  def focus_first_window
-    run_cmd "tmux select-window -t #{session}:0"
+  def focus_window
+    run_cmd "tmux select-window -t #{session}:#{tmux.focused_window}"
   end
 
   def create_session
@@ -72,6 +72,17 @@ class Tmux
     config = File.read(@filepath)
     self.instance_eval config
     Runner.new(self).run
+  end
+
+  def focus_window(window_name_or_index)
+    @focused_window = window_name_or_index
+  end
+
+  def focused_window
+    # try to find the window with the name
+    index = @windows.find_index{|w| w.name == @focused_window}
+
+    index || @focused_window.to_i
   end
 
   def session(name)
