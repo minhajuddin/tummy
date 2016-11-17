@@ -36,6 +36,10 @@ window "play", [
   pane("echo awesome", :vertical),
 ]
 
+# if you comment this out it will focus the first window when the session is started
+focus_window "server-iex"
+# focus_window 0 # you can even focus a window by index starting at 0
+
 ```
 
 Now whenever you run the `tummy` command from this directory it will setup your sessions properly
