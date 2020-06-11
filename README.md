@@ -15,7 +15,7 @@ put a `Tmuxfile` in your app's root by running the `tummy init` command
 
 example Tmuxfile
 
-```
+```ruby
 session "z2-web"
 directory "/home/minhajuddin/z2/web"
 
